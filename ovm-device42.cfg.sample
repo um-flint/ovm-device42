@@ -1,0 +1,9 @@
+[ovm]
+username = admin
+password = yourpassword
+baseUri = https://ovmm.example.com:7002/ovm/core/wsapi/rest
+
+[device42]
+username = admin
+password = yourpassword
+baseUri = https://device42.example.com
