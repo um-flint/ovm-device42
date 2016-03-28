@@ -22,7 +22,7 @@ def get_vms(baseUri,s):
     r=s.get(baseUri+'/Vm')
     return r.json()
 
-def get_vmDetails(baseUri,s,id):
+def get_vmDetails(vm):
     vmdata = {}
 
     vmdata.update({'type': 'virtual'})
