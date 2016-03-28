@@ -19,38 +19,30 @@ def check_manager_state(baseUri,s):
     return
 
 def get_vms(baseUri,s):
-    r=s.get(baseUri+'/Vm/id')
+    r=s.get(baseUri+'/Vm')
     return r.json()
 
 def get_vmDetails(baseUri,s,id):
     vmdata = {}
-    r=s.get(baseUri+'/Vm/'+id)
-    vm = r.json()
 
-    #ignore VMs that are actually templates
-    if vm['vmRunState'] != 'TEMPLATE':
-        vmdata.update({'type': 'virtual'})
-        vmdata.update({'virtual_subtype': 'oracle_vm'})
-        vmdata.update({'virtual_host': vm['serverId']['name']})
-        vmdata.update({'name': vm['name']})
-        vmdata.update({'memory': vm['currentMemory']})
-        vmdata.update({'cpucount': vm['currentCpuCount']})
-        vmdata.update({'os': vm['osType']})
+    vmdata.update({'type': 'virtual'})
+    vmdata.update({'virtual_subtype': 'oracle_vm'})
+    vmdata.update({'virtual_host': vm['serverId']['name']})
+    vmdata.update({'name': vm['name']})
+    vmdata.update({'memory': vm['currentMemory']})
+    vmdata.update({'cpucount': vm['currentCpuCount']})
+    vmdata.update({'os': vm['osType']})
 
-        if vm['vmRunState'] == 'RUNNING':
-            vmdata.update({'in_service': 'yes'})
-        else:
-            vmdata.update({'in_service': 'no'})
+    if vm['vmRunState'] == 'RUNNING':
+        vmdata.update({'in_service': 'yes'})
+    else:
+        vmdata.update({'in_service': 'no'})
         
-        #convert uuid to proper format
-        systemuuid = str(uuid.UUID(vm['id']['value'].replace(':','')))
-        vmdata.update({'uuid': systemuuid.upper()})
+    #convert uuid to proper format
+    systemuuid = str(uuid.UUID(vm['id']['value'].replace(':','')))
+    vmdata.update({'uuid': systemuuid.upper()})
 
     return vmdata
-
-def get_ethernetPorts(baseUri,s,id):
-    r=s.get(baseUri +'/Server/' + id + '/EthernetPort/id')
-    return r.json()
 
 def get_ethernetPortDetails(baseUri,s,id):
     r=s.get(baseUri +'/EthernetPort/' + id)
@@ -71,13 +63,11 @@ def get_ethernetPortDetails(baseUri,s,id):
     return ethdata
 
 def get_servers(baseUri,s):
-    r=s.get(baseUri+'/Server/id')
+    r=s.get(baseUri+'/Server')
     return r.json()
 
-def get_serverDetails(baseUri,s,id):
+def get_serverDetails(server):
     sysdata = {}
-    r=s.get(baseUri+'/Server/'+id)
-    server = r.json()
 
     sysdata.update({'name': server['hostname']})
     sysdata.update({'memory': server['memory']})
@@ -125,11 +115,10 @@ def main():
     for server in get_servers(baseUri, s):
         #get details of a server then post to device42
         print 'Processing Oracle VM Server ' + server['name']
-        sysdata = get_serverDetails(baseUri,s,server['value'])
-        r=requests.post(device42Uri+'/api/1.0/device/',data=sysdata,headers=dsheaders)
+        sysdata = get_serverDetails(server)
 
-	#get a list of ports in the server
-        for ethernetPort in get_ethernetPorts(baseUri,s,server['value']):
+	#get a list of ethernet ports in the server
+        for ethernetPort in server['ethernetPortIds']:
             #get details on the port then post to device42
             portDetails = get_ethernetPortDetails(baseUri,s,ethernetPort['value'])
             r=requests.post(device42Uri+'/api/1.0/macs/',data=portDetails,headers=dsheaders)
@@ -138,12 +127,11 @@ def main():
 
     #get a list of every VM
     for vm in get_vms(baseUri, s):
-        #get the details of a VM
-        vmdata = get_vmDetails(baseUri, s, vm['value'])
-
-        #if the vm is actually a template, there won't be any data - otherwise post it
-        if vmdata != {}:
+        #ignore VMs that are actually templates
+        if vm['vmRunState'] != 'TEMPLATE':
+            #get data on the VM then post it
             print 'Processing virtual machine ' + vm['name']
+            vmdata = get_vmDetails(vm)
             r=requests.post(device42Uri+'/api/1.0/device/',data=vmdata,headers=dsheaders)
 
 if __name__ == '__main__': 
