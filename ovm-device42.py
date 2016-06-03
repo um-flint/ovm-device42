@@ -149,7 +149,13 @@ def main():
             print 'Processing virtual machine ' + vm['name']
             vmdata = get_vmDetails(vm)
             r=requests.post(device42Uri+'/api/1.0/device/',data=vmdata,headers=dsheaders)
+            
+            #make sure the name of the device matches so we dont end up creating a new device for this mac address
+            r=requests.get(device42Uri+'/api/1.0/devices/serial/'+vmdata['serial_no']+'/',headers=dsheaders)
+            existingname = r.json()['name']
             for vnic in get_virtualNicDetails(vm):
+                if existingname != vnic['device']:
+                    vnic.update({'device': existingname})
                 r=requests.post(device42Uri+'/api/1.0/macs/',data=vnic,headers=dsheaders)
 
 if __name__ == '__main__': 
