@@ -40,7 +40,7 @@ def get_vmDetails(vm):
         
     #convert uuid to proper format
     systemuuid = str(uuid.UUID(vm['id']['value'].replace(':','')))
-    vmdata.update({'uuid': systemuuid.upper()})
+    vmdata.update({'uuid': systemuuid.lower()})
     
     return vmdata
 
@@ -95,7 +95,7 @@ def get_serverDetails(server):
 
     #convert uuid to proper format
     systemuuid = str(uuid.UUID(server['id']['value'].replace(':','')))
-    sysdata.update({'uuid': systemuuid.upper()})
+    sysdata.update({'uuid': systemuuid.lower()})
 
     #set the appropriate value for 'in_service'
     if server['serverRunState'] == 'RUNNING':
