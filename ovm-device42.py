@@ -41,8 +41,19 @@ def get_vmDetails(vm):
     #convert uuid to proper format
     systemuuid = str(uuid.UUID(vm['id']['value'].replace(':','')))
     vmdata.update({'uuid': systemuuid.upper()})
-
+    
     return vmdata
+
+def get_virtualNicDetails(vm):
+    vniclist = []
+    
+    for vnic in vm['virtualNicIds']:
+        vnicdata = {}
+        vnicdata.update({'macaddress': vnic['name']})
+        vnicdata.update({'device': vm['name']})
+        vniclist.append(vnicdata)
+        
+    return vniclist
 
 def get_ethernetPortDetails(baseUri,s,id):
     r=s.get(baseUri +'/EthernetPort/' + id)
@@ -133,6 +144,8 @@ def main():
             print 'Processing virtual machine ' + vm['name']
             vmdata = get_vmDetails(vm)
             r=requests.post(device42Uri+'/api/1.0/device/',data=vmdata,headers=dsheaders)
+            for vnic in get_virtualNicDetails(vm):
+                r=requests.post(device42Uri+'/api/1.0/macs/',data=vnic,headers=dsheaders)
 
 if __name__ == '__main__': 
     main()
