@@ -121,9 +121,9 @@ def main():
         for ethernetPort in server['ethernetPortIds']:
             #get details on the port then post to device42
             portDetails = get_ethernetPortDetails(baseUri,s,ethernetPort['value'])
-            r=requests.post(device42Uri+'/api/1.0/macs/',data=portDetails,headers=dsheaders)
+            r=requests.post(device42Uri+'/api/1.0/macs/',portDetails,dsheaders)
             if 'ipaddress' in portDetails:
-                r=requests.post(device42Uri+'/api/1.0/ips/',data=portDetails,headers=dsheaders)
+                r=requests.post(device42Uri+'/api/1.0/ips/',portDetails,dsheaders)
 
     #get a list of every VM
     for vm in get_vms(baseUri, s):
@@ -132,7 +132,7 @@ def main():
             #get data on the VM then post it
             print 'Processing virtual machine ' + vm['name']
             vmdata = get_vmDetails(vm)
-            r=requests.post(device42Uri+'/api/1.0/device/',data=vmdata,headers=dsheaders)
+            r=requests.post(device42Uri+'/api/1.0/device/',vmdata,dsheaders)
 
 if __name__ == '__main__': 
     main()
