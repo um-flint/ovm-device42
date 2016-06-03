@@ -42,6 +42,10 @@ def get_vmDetails(vm):
     systemuuid = str(uuid.UUID(vm['id']['value'].replace(':','')))
     vmdata.update({'uuid': systemuuid.lower()})
     
+    #Oracle VM sets the serial number of the system to be the same as the uuid (at least for HVM/PVHVM)
+    #Setting it here means things don't get weird if a VM is discovered with Linux discovery
+    vmdata.update({'serial_no': systemuuid.lower()})
+    
     return vmdata
 
 def get_virtualNicDetails(vm):
