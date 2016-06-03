@@ -127,6 +127,7 @@ def main():
         #get details of a server then post to device42
         print 'Processing Oracle VM Server ' + server['name']
         sysdata = get_serverDetails(server)
+        r=requests.post(device42Uri+'/api/1.0/device/',data=sysdata,headers=dsheaders)
 
 	#get a list of ethernet ports in the server
         for ethernetPort in server['ethernetPortIds']:
