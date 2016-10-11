@@ -27,7 +27,10 @@ def get_vmDetails(vm):
 
     vmdata.update({'type': 'virtual'})
     vmdata.update({'virtual_subtype': 'oracle_vm'})
-    vmdata.update({'virtual_host': vm['serverId']['name']})
+    if vm['serverId'] is not None:
+        vmdata.update({'virtual_host': vm['serverId']['name']})
+    else:
+         vmdata.update({'virtual_host_clear': 'yes' })
     vmdata.update({'name': vm['name']})
     vmdata.update({'memory': vm['currentMemory']})
     vmdata.update({'cpucount': vm['currentCpuCount']})
