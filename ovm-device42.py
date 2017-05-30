@@ -18,10 +18,12 @@ def check_manager_state(baseUri,s):
         time.sleep(1)
     return
 
+#Get a list of VMs on a host
 def get_vms(baseUri,s):
     r=s.get(baseUri+'/Vm')
     return r.json()
 
+#Get all the specs from a VM instance
 def get_vmDetails(vm):
     vmdata = {}
 
@@ -48,6 +50,7 @@ def get_vmDetails(vm):
     
     return vmdata
 
+#Get mac addresses and IP info for a VM
 def get_virtualNicDetails(vm):
     vniclist = []
     
@@ -59,6 +62,7 @@ def get_virtualNicDetails(vm):
         
     return vniclist
 
+#Get info about physical ethernet ports in a host
 def get_ethernetPortDetails(baseUri,s,id):
     r=s.get(baseUri +'/EthernetPort/' + id)
 
@@ -77,10 +81,12 @@ def get_ethernetPortDetails(baseUri,s,id):
 
     return ethdata
 
+#get a list of all OVS hosts managed by this manager
 def get_servers(baseUri,s):
     r=s.get(baseUri+'/Server')
     return r.json()
 
+#Get all the specs from a OVS host
 def get_serverDetails(server):
     sysdata = {}
 
@@ -110,6 +116,7 @@ def get_serverDetails(server):
     return sysdata
 
 def main():
+    #parse the config file
     config = ConfigParser.ConfigParser()
     config.readfp(open('ovm-device42.cfg'))
     ovmusername = config.get('ovm','username')
@@ -119,6 +126,7 @@ def main():
     d42password = config.get('device42','password')
     device42Uri = config.get('device42','baseUri')
     
+    #start a session with the Oracle VM Manager
     s=requests.Session()
     s.auth=(ovmusername, ovmpassword)
     s.headers.update({'Accept': 'application/json', 'Content-Type': 'application/json'})
