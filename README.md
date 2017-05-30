@@ -4,4 +4,4 @@ It can be run with './ovm-device42.py' and expects a config file in the same dir
 
 It was written on a Mac with Python 2.7
 
-I have tested it against Oracle VM Manager 3.3.3 and 3.3.4.  I suspect it would also work with Oracle VM Manager 3.4.1.
+I have tested it against Oracle VM Manager 3.3.3, 3.3.4, and 3.4.3.
