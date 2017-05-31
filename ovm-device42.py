@@ -6,6 +6,8 @@ import time
 import uuid
 import base64
 import ConfigParser
+import os
+import sys
 
 #taken from the Oracle VM Web Services API Developer's Guide
 def check_manager_state(baseUri,s):
@@ -121,7 +123,7 @@ def get_serverDetails(server):
 def main():
     #parse the config file
     config = ConfigParser.ConfigParser()
-    config.readfp(open('ovm-device42.cfg'))
+    config.readfp(open(os.path.join(sys.path[0],'ovm-device42.cfg')))
     ovmusername = config.get('ovm','username')
     ovmpassword = config.get('ovm','password')
     baseUri = config.get('ovm','baseUri')
